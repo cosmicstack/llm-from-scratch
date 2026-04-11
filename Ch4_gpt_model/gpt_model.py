@@ -113,15 +113,29 @@ if __name__ == "__main__":
     # batch = torch.stack(batch, dim=0)
     # print(batch)
 
-    # torch.manual_seed(123)
-    # model = GPTModel(GPT_CONFIG_124M)
+    torch.manual_seed(123)
+    model = GPTModel(GPT_CONFIG_124M)
     # logits = model(batch)
     # print(f"Outputs shape: {logits.shape}")
     # print(logits)
 
-    torch.manual_seed(123)
-    x = torch.rand(2, 4, 768)
-    block = TransformerBlock(GPT_CONFIG_124M)
-    output = block(x)
+    # torch.manual_seed(123)
+    # x = torch.rand(2, 4, 768)
+    # block = TransformerBlock(GPT_CONFIG_124M)
+    # output = block(x)
 
-    print(f"Output shape: {output.shape}")
+    # print(f"Output shape: {output.shape}")
+    total_params = sum(p.numel() for p in model.parameters())
+    print(f"Total params: {total_params}\n")
+    print(f"# of trainable params w/ weight tying: {total_params - sum(p.numel() for p in model.out_head.parameters())}\n")
+
+    ff_params = 0
+    att_params = 0
+    for _, child in model.trf_blocks.named_children():
+        for _, grandchild in child.named_children():
+            if grandchild.__class__.__name__ == "MultiHeadAttention":
+                att_params += sum(p.numel() for p in grandchild.parameters())
+            elif grandchild.__class__.__name__ == "FeedForward":
+                ff_params += sum(p.numel() for p in grandchild.parameters())
+    
+    print(ff_params, att_params)
