@@ -1,10 +1,6 @@
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 import torch
 import torch.nn as nn
-from config import GPT_CONFIG_124M
+from Ch4_gpt_model.config import GPT_CONFIG_124M
 from Ch3_attention.multihead_attention import MultiHeadAttention
 
 class GPTModel(nn.Module):
