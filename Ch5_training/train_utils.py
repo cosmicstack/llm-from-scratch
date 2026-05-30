@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 from Ch2_text_data.dataset_loader import create_dataloader_V1
 from Ch4_gpt_model.gpt_model import GPTModel
-from Ch4_gpt_model.run import generate_text_example
+from Ch4_gpt_model.run import generate_text_example, generate
 from Ch5_training.base import GPT_CONFIG_124M, text_to_token_ids, token_ids_to_text
 
 file_path = "Ch2_text_data/the-verdict.txt"
@@ -80,11 +80,13 @@ def generate_and_print_sample(model, tokenizer, device, start_context):
     context_size = model.pos_emb.weight.shape[0]
     encoded = text_to_token_ids(start_context, tokenizer).to(device)
     with torch.no_grad():
-        token_ids = generate_text_example(
+        token_ids = generate(
             model=model,
             idx=encoded,
             max_new_tokens=50,
-            context_size=context_size
+            context_size=context_size,
+            top_k=25,
+            temperature=1.4
         )
     decoded_text = token_ids_to_text(token_ids, tokenizer)
     print(decoded_text.replace("\n", " "))
